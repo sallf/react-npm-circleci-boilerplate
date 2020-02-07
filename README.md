@@ -1,4 +1,5 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/sallf/react-npm-boilerplate/badge.svg)](https://snyk.io/test/github/sallf/react-npm-boilerplate)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 # React, NPM and CircleCI Boilerplate
 Boilerplate template for building `npm` modules with React and JSX. Also includes a script from CircleCI to deploy to AWS S3.
@@ -31,7 +32,7 @@ $ npm run dev
 ## Deploy to AWS
 This template includes a `config.yml` file which will help you deploy to your AWS S3 bucket. If you don't need this functionality, just delete the `.circleci/` folder.
 
-After you've followed the setup steps below, any merge to `master` branch should trigger on a buid on CircleCI.
+After you've followed the setup steps below, any merge to `master` branch should trigger a buid on CircleCI.
 
 ### Setup a CircleCI Account
 You'll need to setup an account with [CircleCI](https://circleci.com/) and link to your GitHub account.
@@ -51,7 +52,7 @@ We'll be using CircleCI's new [aws-s3 orb](https://circleci.com/orbs/registry/or
 - [React](https://www.npmjs.com/package/react)
 - [React DOM](https://www.npmjs.com/package/react-dom)
 
-## Dev Dependencies
+### Dev Dependencies
 - [Babel](https://www.npmjs.com/package/@babel/core) Makes ECMAScript 2015+ backwards compatible
 - [Clean Webpack Plugin](https://www.npmjs.com/package/clean-webpack-plugin) Removes unused files on each build
 - [Cross Env](https://www.npmjs.com/package/cross-env) Allows environment variables
@@ -67,4 +68,4 @@ We'll be using CircleCI's new [aws-s3 orb](https://circleci.com/orbs/registry/or
 
 ## License
 
-The code is available under the [MIT license](LICENSE.txt).
+The code is available under the [MIT license](LICENSE).
