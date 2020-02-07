@@ -57,6 +57,7 @@ We'll be using CircleCI's new [aws-s3 orb](https://circleci.com/orbs/registry/or
 - [Clean Webpack Plugin](https://www.npmjs.com/package/clean-webpack-plugin) Removes unused files on each build
 - [Cross Env](https://www.npmjs.com/package/cross-env) Allows environment variables
 - [CSS Loader](https://www.npmjs.com/package/css-loader) Allows CSS imports
+- [ESLint](https://www.npmjs.com/package/eslint) Linter
 - [File Loader](https://www.npmjs.com/package/file-loader) Handles import/require() on files
 - [HTML Webpack Plugin](https://www.npmjs.com/package/html-webpack-plugin) Simplifies creation of HTML files
 - [SASS Loader](https://www.npmjs.com/package/sass-loader) SCSS files to CSS
