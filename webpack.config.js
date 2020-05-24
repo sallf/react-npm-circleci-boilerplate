@@ -1,5 +1,4 @@
 // SETUP
-const webpack = require('webpack');
 const path = require('path');
 
 // PLUGINS
@@ -14,7 +13,7 @@ module.exports = (env, argv) => {
   const isDev = mode === 'development';
 
   console.info(
-    `Environment: ${env} - Mode: ${mode}`,
+    `Environment: ${env} | Mode: ${mode}`,
   );
 
   // RESOLVE
@@ -31,11 +30,6 @@ module.exports = (env, argv) => {
 
   const cleanWebpackPlugin = new CleanWebpackPlugin();
 
-  // optimization plugins
-  const definePlugin = new webpack.DefinePlugin({
-    'process.env.NODE_ENV': JSON.stringify('production'),
-  });
-
   const plugins = [
     htmlWebpackPlugin,
   ];
@@ -43,13 +37,12 @@ module.exports = (env, argv) => {
   if (isProd) {
     plugins.push(
       cleanWebpackPlugin,
-      definePlugin,
     );
   }
 
   return ({
     context: contextPath,
-    devtool: isDev ? 'inline-sourcemap' : false,
+    devtool: isDev ? 'inline-sourcemap' : false, // Easier debugging in dev
     entry: './index.jsx',
     resolve: {
       alias: {
@@ -81,7 +74,7 @@ module.exports = (env, argv) => {
           test: /\.(png|jpg|gif)$/i,
           use: [
             {
-              loader: 'url-loader',
+              loader: 'url-loader', // transforms files into base64 URIs
               options: {
                 limit: 10000,
               },
