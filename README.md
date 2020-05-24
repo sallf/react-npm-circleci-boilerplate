@@ -55,7 +55,6 @@ We'll be using CircleCI's new [aws-s3 orb](https://circleci.com/orbs/registry/or
 ### Dev Dependencies
 - [Babel](https://www.npmjs.com/package/@babel/core) Makes ECMAScript 2015+ backwards compatible
 - [Clean Webpack Plugin](https://www.npmjs.com/package/clean-webpack-plugin) Removes unused files on each build
-- [Cross Env](https://www.npmjs.com/package/cross-env) Allows environment variables
 - [CSS Loader](https://www.npmjs.com/package/css-loader) Allows CSS imports
 - [ESLint](https://www.npmjs.com/package/eslint) Linter
 - [File Loader](https://www.npmjs.com/package/file-loader) Handles import/require() on files
