@@ -1,13 +1,24 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 
 import Basics from '../components/Basics';
+import DotMover from '../components/DotMover';
 
-class App extends Component {
-  render() {
-    return (
-      <Basics />
-    )
-  }
-}
+const App = () => {
+  const [page, setPage] = useState('basics');
+
+
+  return (
+    <>
+      <button onClick={() => setPage('basics')} type="button">Basics</button>
+      <button onClick={() => setPage('dotMover')} type="button">Dot Mover</button>
+      {
+        page === 'basics' && <Basics />
+      }
+      {
+        page === 'dotMover' && <DotMover />
+      }
+    </>
+  );
+};
 
 export default App;
