@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 
+import Basics from '../components/Basics';
+
 class App extends Component {
   render() {
     return (
-      <p>The universe is a big place, perhaps the biggest.</p>
+      <Basics />
     )
   }
 }
