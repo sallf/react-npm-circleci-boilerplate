@@ -4,7 +4,7 @@ import Basics from '../components/Basics';
 import DotMover from '../components/DotMover';
 
 const App = () => {
-  const [page, setPage] = useState('basics');
+  const [page, setPage] = useState('dotMover');
 
 
   return (
