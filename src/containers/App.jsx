@@ -9,14 +9,14 @@ const App = () => {
 
   return (
     <>
-      <button onClick={() => setPage('basics')} type="button">Basics</button>
-      <button onClick={() => setPage('dotMover')} type="button">Dot Mover</button>
       {
         page === 'basics' && <Basics />
       }
       {
         page === 'dotMover' && <DotMover />
       }
+      <button onClick={() => setPage('basics')} type="button">Basics</button>
+      <button onClick={() => setPage('dotMover')} type="button">Dot Mover</button>
     </>
   );
 };

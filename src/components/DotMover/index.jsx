@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { Component } from 'react';
 import * as THREE from 'three';
 
 const scene = new THREE.Scene();
@@ -11,15 +11,11 @@ let width;
 let height;
 
 const rend = () => {
-  console.log('mse', mouse);
-
   // update the picking ray with the camera and mouse position
   raycaster.setFromCamera(mouse, camera);
 
   // calculate objects intersecting the picking ray
   const intersects = raycaster.intersectObjects(scene.children);
-
-  console.log('REND', intersects);
 
   for (let i = 0; i < intersects.length; i += 1) {
     intersects[i].object.material.color.set(0xff0000);
@@ -33,20 +29,10 @@ const rend = () => {
 // renderer.setSize(window.innerWidth, window.innerHeight);
 // document.body.appendChild(renderer.domElement);
 
-const DotMover = () => {
-  const canvasRef = useRef(null);
-
-  useEffect(() => {
-    // const canvas = canvasRef.current;
-    // const context = canvas.getContext('2d');
-    // var renderer = new THREE.WebGLRenderer( { canvas: artifactCanvas } );
-
-    // renderer.canvas = canvasRef.current;
-
-    // canvasContainer.current.appendChild(renderer.domElement);
-
-    width = canvasRef.current.clientWidth;
-    height = canvasRef.current.clientHeight;
+class DotMover extends Component {
+  componentDidMount() {
+    width = this.canvasRef.clientWidth;
+    height = this.canvasRef.clientHeight;
 
     camera = new THREE.PerspectiveCamera(
       60, // fov = field of view
@@ -55,7 +41,7 @@ const DotMover = () => {
       1000, // far plane
     );
 
-    renderer = new THREE.WebGLRenderer({ canvas: canvasRef.current });
+    renderer = new THREE.WebGLRenderer({ canvas: this.canvasRef });
     renderer.setPixelRatio(width / height);
     // renderer.setSize(width, height);
 
@@ -89,24 +75,27 @@ const DotMover = () => {
     // animate();
 
     renderer.render(scene, camera);
-  }, []);
+  }
 
-  const handleMouseMove = (evt) => {
+
+  handleMouseMove = (evt) => {
     mouse.x = (evt.clientX / width) * 2 - 1;
     mouse.y = -(evt.clientY / height) * 2 + 1;
 
     rend();
   };
 
-  return (
-    <div>
-      <canvas
-        ref={canvasRef}
-        style={{ width: '75%', height: '50vh', display: 'block' }}
-        onMouseMove={handleMouseMove}
-      />
-    </div>
-  );
+  render() {
+    return (
+      <div>
+        <canvas
+          ref={elem => this.canvasRef = elem}
+          style={{ width: '75%', height: '50vh', display: 'block' }}
+          onMouseMove={this.handleMouseMove}
+        />
+      </div>
+    );
+  }
 };
 
 DotMover.defaultProps = {
