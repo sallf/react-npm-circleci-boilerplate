@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import * as THREE from 'three';
 
 const scene = new THREE.Scene();
-const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
 let camera;
@@ -10,26 +9,14 @@ let renderer;
 let width;
 let height;
 
-const rend = () => {
-  // update the picking ray with the camera and mouse position
-  raycaster.setFromCamera(mouse, camera);
-
-  // calculate objects intersecting the picking ray
-  const intersects = raycaster.intersectObjects(scene.children);
-
-  for (let i = 0; i < intersects.length; i += 1) {
-    intersects[i].object.material.color.set(0xff0000);
+class DotMover extends Component {
+  constructor() {
+    super();
+    this.raycaster = new THREE.Raycaster();
+    this.pickedObject = null;
+    this.pickedObjectSavedColor = 0;
   }
 
-  renderer.render(scene, camera);
-};
-
-
-// const renderer = new THREE.WebGLRenderer();
-// renderer.setSize(window.innerWidth, window.innerHeight);
-// document.body.appendChild(renderer.domElement);
-
-class DotMover extends Component {
   componentDidMount() {
     width = this.canvasRef.clientWidth;
     height = this.canvasRef.clientHeight;
@@ -56,33 +43,67 @@ class DotMover extends Component {
       shininess: 50,
       shading: THREE.SmoothShading,
     });
-    const sphere = new THREE.Mesh(geometry, material);
-    scene.add(sphere);
+
+    const objects = [];
+
+    for (let i = 0; i < 10; i += 1) {
+      const material = new THREE.MeshPhongMaterial({
+        color: Math.random() * 0xffffff,
+        specular: 0xffffff,
+        shininess: 50,
+        shading: THREE.SmoothShading,
+      });
+
+      const sphere = new THREE.Mesh(geometry, material);
+
+      sphere.position.x = Math.random() * 10;
+      sphere.position.y = Math.random() * 10;
+      sphere.position.z = Math.random() * 10;
+
+      sphere.castShadow = true;
+      sphere.receiveShadow = true;
+
+      scene.add(sphere);
+    }
 
     // camera.position.x = 1;
     // camera.position.y = 1;
-    camera.position.z = 5;
+    camera.position.z = 30;
 
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
 
-    const animate = () => {
-      requestAnimationFrame(animate);
-      // sphere.rotation.x += 0.01;
-      // sphere.rotation.y += 0.01;
-      renderer.render(scene, camera);
-    };
-    // animate();
-
     renderer.render(scene, camera);
   }
 
+  rend = () => {
+    // update the picking ray with the camera and mouse position
+    this.raycaster.setFromCamera(mouse, camera);
+
+    // calculate objects intersecting the picking ray
+    const intersects = this.raycaster.intersectObjects(scene.children);
+
+    for (let i = 0; i < intersects.length; i += 1) {
+      intersects[i].object.material.color.set(0xff0000);
+
+      // pick the first object. It's the closest one
+      this.pickedObject = intersects[0].object;
+    }
+
+    if (this.pickedObject) {
+      console.log('ll', mouse);
+      this.pickedObject.position.x = mouse.x;
+      this.pickedObject.position.y = mouse.y;
+    }
+
+    renderer.render(scene, camera);
+  };
 
   handleMouseMove = (evt) => {
     mouse.x = (evt.clientX / width) * 2 - 1;
     mouse.y = -(evt.clientY / height) * 2 + 1;
 
-    rend();
+    this.rend();
   };
 
   render() {

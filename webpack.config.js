@@ -5,6 +5,8 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin'); // simplifies HTML files for webpack (really connects to the index.ejs file)
 const { CleanWebpackPlugin } = require('clean-webpack-plugin'); // remove/clean your build folder(s)
 
+const resolveConfig = require('./webpack.config.resolve');
+
 module.exports = (env, argv) => {
   const { mode } = argv;
 
@@ -46,6 +48,7 @@ module.exports = (env, argv) => {
     entry: './index.jsx',
     resolve: {
       alias: {
+        ...resolveConfig.resolve.alias,
         config: path.resolve(__dirname, 'config', env),
       },
       extensions: ['*', '.js', '.json', '.jsx'],
