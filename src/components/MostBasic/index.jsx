@@ -86,7 +86,8 @@ class Boxes extends Component {
       1, // OPTIONAL heightSegments. Number of segmented rectangular faces along the height of the sides. Default 1;
       1, // OPTIONAL depthSegments. Number of segmented rectangular faces along the depth of the sides. Default 1;
     );
-    const material = new THREE.MeshBasicMaterial(
+    // MeshBasicMaterial || MeshPhongMaterial
+    const material = new THREE.MeshPhongMaterial(
       {
         color: '#433F81',
       },
