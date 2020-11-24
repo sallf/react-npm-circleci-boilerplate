@@ -118,7 +118,7 @@ class PixelContainer extends Component {
       0.1, // near — Near is relative to z-position.
       1000, // far — Must be greater than near.
     );
-    this.camera.position.set(this.nrOfCubesX / 2, -this.nrOfCubesY / 2, z);
+    this.camera.position.set(this.nrOfCubesX / 2, this.nrOfCubesY / 2, z);
 
     // const controls = new OrbitControls(this.camera);
     // controls.target.set(this.nrOfCubesX / 2, this.nrOfCubesY / 2, 0);
@@ -142,7 +142,7 @@ class PixelContainer extends Component {
         });
 
         const cube = new THREE.Mesh(geometry, material);
-        cube.position.set(x, -y, 0);
+        cube.position.set(x, y, 0);
         this.scene.add(cube);
         this.cubes.push(cube);
       }
@@ -191,7 +191,7 @@ class PixelContainer extends Component {
     this.cubes.forEach((cube, index) => {
       const { x, y } = cube.position;
 
-      const pixelRIndex = (4 * this.steps * x) + (4 * this.width * (-y * this.steps));
+      const pixelRIndex = (4 * this.steps * x) + (4 * this.width * (y * this.steps));
 
       const cubeHsl = this.rgbToHsl(pixels[pixelRIndex], pixels[pixelRIndex + 1], pixels[pixelRIndex + 2]);
 
@@ -238,17 +238,14 @@ class PixelContainer extends Component {
           ref={this.video}
           className="d-none"
           // style={{ display: 'none' }}
-          // style={{ width: '100%', height: '100vh', display: 'block' }}
           playsInline
         />
         <canvas
           ref={this.canvas}
-          // style={{ width: '100%', height: '100vh', display: 'block' }}
         />
         <canvas
           ref={this.rendererCanvas}
-          // style={{ width: '100%', height: '100vh', display: 'block' }}
-          style={{ display: 'block' }}
+          style={{ display: 'block', transform: 'scale(-1)' }}
         />
         <button
           type="button"
