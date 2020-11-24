@@ -1,5 +1,6 @@
 import React, { Component, createRef } from 'react';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 class PixelContainer extends Component {
   constructor(props) {
@@ -32,8 +33,6 @@ class PixelContainer extends Component {
     this.gradients = 0; // 0 means calculate dynamically | >0 means round numbers to set gradient colors
     this.nrOfCubesX = 0;
     this.nrOfCubesY = 0;
-
-    this.colors = null;
 
     // Event listeners
     // window.addEventListener('resize', this.handleResize);
@@ -120,9 +119,9 @@ class PixelContainer extends Component {
     );
     this.camera.position.set(this.nrOfCubesX / 2, this.nrOfCubesY / 2, z);
 
-    // const controls = new OrbitControls(this.camera);
-    // controls.target.set(this.nrOfCubesX / 2, this.nrOfCubesY / 2, 0);
-    // controls.update();
+    const controls = new OrbitControls(this.camera, this.renderer.domElement);
+    controls.target.set(this.nrOfCubesX / 2, this.nrOfCubesY / 2, 0);
+    controls.update();
   }
 
   setupCubes = () => {
@@ -130,7 +129,7 @@ class PixelContainer extends Component {
     const geometry = new THREE.BoxGeometry(
       1, // width
       1, // height
-      1, // depth
+      0.1, // depth
     );
     const color = new THREE.Color('rgb(128, 128, 128)');
 
@@ -150,11 +149,11 @@ class PixelContainer extends Component {
   }
 
   setupLights = () => {
-    const ambientLight = new THREE.AmbientLight(0x777777);
-    this.scene.add(ambientLight);
+    // const ambientLight = new THREE.AmbientLight(0x777777);
+    // this.scene.add(ambientLight);
 
     const spotLight = new THREE.SpotLight(0xbbbbbb);
-    spotLight.position.set(0, this.nrOfCubesY, 100);
+    spotLight.position.set(0, this.nrOfCubesY * 2, 20);
     spotLight.castShadow = true;
     this.scene.add(spotLight);
   }
@@ -202,10 +201,8 @@ class PixelContainer extends Component {
       // this.cubes[index].scale.z = z;
       // this.cubes[index].position.z = z / 2;
 
-      this.cubes[index].material.color = new THREE.Color(`hsl(0, 0%, ${Math.round(cubeHsl[2] * 100)}%)`);
-
       // this.cubes[index].rotation.x += 0.01;
-      // this.cubes[index].rotation.y += 0.01;
+      this.cubes[index].rotation.x = cubeHsl[2] - 0.5;
     });
   }
 
@@ -245,7 +242,7 @@ class PixelContainer extends Component {
         />
         <canvas
           ref={this.rendererCanvas}
-          style={{ display: 'block', transform: 'scale(-1)' }}
+          // style={{ display: 'block', transform: 'scale(-1)' }}
         />
         <button
           type="button"

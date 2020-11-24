@@ -10,7 +10,6 @@ import PixelContainer from '../components/PixelContainer';
 const App = () => {
   const [page, setPage] = useState('pixelContainer');
 
-
   return (
     <>
       {
