@@ -8,6 +8,7 @@ class PixelContainer extends Component {
     // Canvas
     this.canvas = createRef();
     this.ctx = null;
+    this.rendererCanvas = createRef();
 
     // SCENE
     this.scene = new THREE.Scene();
@@ -22,13 +23,13 @@ class PixelContainer extends Component {
 
     // Mesh stuff
     this.cubes = [];
-    this.color = new THREE.Color();
 
     // webcam
     this.video = createRef();
 
     // Pixel logic
-    this.size = 8;
+    this.steps = 8; // get every x number of pixels
+    this.gradients = 0; // 0 means calculate dynamically | >0 means round numbers to set gradient colors
     this.nrOfCubesX = 0;
     this.nrOfCubesY = 0;
 
@@ -44,8 +45,6 @@ class PixelContainer extends Component {
 
   componentDidMount() {
     this.setupCanvas();
-
-    this.setupColors();
     this.setupRenderer();
 
     this.setupWebCamera().then(() => {
@@ -73,12 +72,15 @@ class PixelContainer extends Component {
     this.ctx = this.canvas.current.getContext('2d');
   }
 
-  setupColors = () => {
-    this.colors = new Map();
-    for (let i = 0; i < 256; i += 1) {
-      const c = new THREE.Color(`rgb(${i}, ${i}, ${i})`);
-      this.colors.set(i, c);
-    }
+  setupRenderer = () => {
+    // Create a renderer with Antialiasing
+    this.renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      canvas: this.rendererCanvas.current,
+    });
+
+    // Configure renderer size
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
   setupWebCamera = () => {
@@ -99,38 +101,24 @@ class PixelContainer extends Component {
     });
   }
 
-  setupRenderer = () => {
-    // Create a renderer with Antialiasing
-    this.renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      // canvas: this.canvas.current,
-    });
-    // Configure renderer clear color
-    // this.renderer.setClearColor('#000000');
-
-    // Configure renderer size
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
-
-    document.body.appendChild(this.renderer.domElement);
-  }
-
   reset = () => {
     this.width = this.canvas.current.width = this.video.current.videoWidth;
     this.height = this.canvas.current.height = this.video.current.videoHeight;
-    this.nrOfCubesX = this.width / this.size;
-    this.nrOfCubesY = this.height / this.size;
+
+    this.nrOfCubesX = Math.floor(this.width / this.steps);
+    this.nrOfCubesY = Math.floor(this.height / this.steps);
   }
 
   setupCamera = () => {
-    const z = (1 / this.size) * 500;
+    const z = (1 / this.steps) * 500;
 
     this.camera = new THREE.PerspectiveCamera(
-      75, // fov — Camera frustum vertical field of view, from bottom to top of view, in degrees. Default is 50. 10 is like a 2000mm lens | 140 is like a 20mm lense
-      this.width / this.height, // aspect — Camera frustum aspect ratio. Default is 1 (square).
-      0.1, // near — Camera frustum near plane. Default is 0.1. Valid range is greater than 0 and less than the current value of the far plane. There is also a z-position that can be set which is different from "near". Near is relative to z-position.
-      1000, // far — Camera frustum far plane. Default is 2000. Must be greater than near.
+      75, // fov — Default is 50. 10 is like a 2000mm lens | 140 is like a 20mm lense
+      window.innerWidth / window.innerHeight, // aspect — Camera frustum aspect ratio. Default is 1 (square).
+      0.1, // near — Near is relative to z-position.
+      1000, // far — Must be greater than near.
     );
-    this.camera.position.set(this.nrOfCubesX / 2, this.nrOfCubesY / 2, z);
+    this.camera.position.set(this.nrOfCubesX / 2, -this.nrOfCubesY / 2, z);
 
     // const controls = new OrbitControls(this.camera);
     // controls.target.set(this.nrOfCubesX / 2, this.nrOfCubesY / 2, 0);
@@ -143,20 +131,18 @@ class PixelContainer extends Component {
       1, // width
       1, // height
       1, // depth
-      1, // OPTIONAL widthSegments. Number of segmented rectangular faces along the width of the sides. Default 1;
-      1, // OPTIONAL heightSegments. Number of segmented rectangular faces along the height of the sides. Default 1;
-      1, // OPTIONAL depthSegments. Number of segmented rectangular faces along the depth of the sides. Default 1;
     );
     const color = new THREE.Color('rgb(128, 128, 128)');
 
-    for (let x = 0; x < this.nrOfCubesX; x += 1) {
-      for (let y = 0; y < this.nrOfCubesY; y += 1) {
+    for (let y = 0; y < this.nrOfCubesY; y += 1) {
+      for (let x = 0; x < this.nrOfCubesX; x += 1) {
         const material = new THREE.MeshStandardMaterial({
           roughness: 0.5,
           color,
         });
+
         const cube = new THREE.Mesh(geometry, material);
-        cube.position.set(x, y, 0);
+        cube.position.set(x, -y, 0);
         this.scene.add(cube);
         this.cubes.push(cube);
       }
@@ -198,25 +184,6 @@ class PixelContainer extends Component {
     return [h * 60, s, l];
   }
 
-  getAverage = (pixels, x0, y0) => {
-    let r = 0;
-    let g = 0;
-    let b = 0;
-
-    for (let x = x0; x < x0 + this.size; x += 1) {
-      for (let y = y0; y < y0 + this.size; y += 1) {
-        const index = (x + this.width * y) * 4;
-        r += pixels[index];
-        g += pixels[index + 1];
-        b += pixels[index + 2];
-      }
-    }
-
-    const val = (0.2126 * r + 0.7152 * g + 0.0722 * b) / (this.size * this.size);
-
-    return isNaN(val) ? 1 : val;
-  }
-
   pixelate = () => {
     const imageData = this.ctx.getImageData(0, 0, this.width, this.height);
     const pixels = imageData.data;
@@ -224,11 +191,11 @@ class PixelContainer extends Component {
     this.cubes.forEach((cube, index) => {
       const { x, y } = cube.position;
 
-      const pixelRIndex = (((y * this.nrOfCubesX) + x) * this.size) * 4; // 4 bc pixels[0] = r, pixels[1] = g, pixels[2] = b, pixels[3] = a;
+      const pixelRIndex = (4 * this.steps * x) + (4 * this.width * (-y * this.steps));
 
       const cubeHsl = this.rgbToHsl(pixels[pixelRIndex], pixels[pixelRIndex + 1], pixels[pixelRIndex + 2]);
 
-      // const col = this.getAverage(pixels, this.width - x * this.size, this.height - y * this.size);
+      // const col = this.getAverage(pixels, this.width - x * this.steps, this.height - y * this.steps);
       // const c = Math.round(col);
       // this.cubes[index].material.color = this.colors.get(c);
       // const z = col / 10 + 0.01;
@@ -237,8 +204,8 @@ class PixelContainer extends Component {
 
       this.cubes[index].material.color = new THREE.Color(`hsl(0, 0%, ${Math.round(cubeHsl[2] * 100)}%)`);
 
-      this.cubes[index].rotation.x += 0.01;
-      this.cubes[index].rotation.y += 0.01;
+      // this.cubes[index].rotation.x += 0.01;
+      // this.cubes[index].rotation.y += 0.01;
     });
   }
 
@@ -271,11 +238,17 @@ class PixelContainer extends Component {
           ref={this.video}
           className="d-none"
           // style={{ display: 'none' }}
+          // style={{ width: '100%', height: '100vh', display: 'block' }}
           playsInline
         />
         <canvas
           ref={this.canvas}
-          style={{ width: '100%', height: '100vh', display: 'block' }}
+          // style={{ width: '100%', height: '100vh', display: 'block' }}
+        />
+        <canvas
+          ref={this.rendererCanvas}
+          // style={{ width: '100%', height: '100vh', display: 'block' }}
+          style={{ display: 'block' }}
         />
         <button
           type="button"
