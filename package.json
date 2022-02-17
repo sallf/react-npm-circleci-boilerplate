@@ -10,7 +10,7 @@
     "@babel/runtime": "7.9.6",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "three": "^0.120.1"
+    "three": "^0.137.1"
   },
   "devDependencies": {
     "@babel/core": "7.12.3",
