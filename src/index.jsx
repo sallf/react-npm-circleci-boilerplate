@@ -1,10 +1,8 @@
-import React from 'react';
-import { render } from 'react-dom';
+import React from 'react'
+import { render } from 'react-dom'
 
-import './assets/scss/main.scss';
+import './assets/scss/main.scss'
 
-import App from './containers/App';
+import App from './screens/App'
 
-render((
-  <App />
-), document.getElementById('root'));
+render(<App />, document.getElementById('root'))
